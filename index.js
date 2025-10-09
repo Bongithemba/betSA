@@ -32,7 +32,11 @@ app.use(express.static("public")); //styles and js in this folder
 app.use(bodyParser.urlencoded({extended: true})); //middleware for handling user input.
 
 app.get("/", (req, res)=>{
-res.render("registration.ejs"); // landing page of the website.
+	res.render("registration.ejs"); // landing page of the website.
+});
+
+app.get('/login', (req, res) => {
+	res.render('login.ejs');
 })
 
 
