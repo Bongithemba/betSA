@@ -46,6 +46,10 @@ app.post("/loginDetails", (req, res)=>{
 
 	con.query(`SELECT * FROM users WHERE email = '${email}'`, function (err, result) {
     if (err) throw err;
+	if (result.length === 0) {
+        // No user with this email found
+        return res.render('login.ejs', { message: "Email not found. Please register first." });
+    }
     console.log(result[0].password);
 	bcrypt.compare(password, result[0].password, function(err, result) {
 		if (err) throw err;
@@ -53,7 +57,37 @@ app.post("/loginDetails", (req, res)=>{
 		if (result == false){
 			res.render('index.ejs', {message: "Incorrect Password!Try Again"})
 		} else {
-			res.render('dashboard.ejs')
+
+			//********* All for sporting events **************/
+			const options = { //Get the latest odds for all events
+			method: 'GET',
+			url: 'https://sportsbook-api2.p.rapidapi.com/v0/competitions/',
+			params: {type: 'ARBITRAGE'},
+			headers: {
+				'x-rapidapi-key': 'df6985d70dmsh02dc2dacc683a0cp19beaajsn0723f8e88817',
+				'x-rapidapi-host': 'sportsbook-api2.p.rapidapi.com'
+			}
+			};
+
+			async function fetchData() {
+				try {
+					const response = await axios.request(options);
+					
+					console.log(response.data.competitions);
+					console.log(typeof response.data.competitions);
+
+					res.render('dashboard.ejs',{competitions: response.data.competitions} );
+				
+
+				} catch (error) {
+					console.error(error);
+				}
+			}
+
+			fetchData();
+			//***************end********************/
+			
+			
 		}
 	});
 	});
@@ -88,26 +122,4 @@ app.post("/register", (req, res)=>{
 });
 
 
-//********* All for sporting events **************/
-const options = { //Get the latest odds for all events
-  method: 'GET',
-  url: 'https://sportsbook-api2.p.rapidapi.com/v0/competitions/',
-  params: {type: 'ARBITRAGE'},
-  headers: {
-    'x-rapidapi-key': 'df6985d70dmsh02dc2dacc683a0cp19beaajsn0723f8e88817',
-    'x-rapidapi-host': 'sportsbook-api2.p.rapidapi.com'
-  }
-};
 
-async function fetchData() {
-	try {
-		const response = await axios.request(options);
-		console.log(response.data.competitions);
-
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-fetchData();
-//***************end********************/
