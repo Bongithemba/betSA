@@ -23,6 +23,18 @@ let con = mysql.createConnection(
 	}
 ); //configure connection to database
 
+//********* All for sporting events **************/
+const options = {
+  method: 'GET',
+  url: 'https://sportsbook-api2.p.rapidapi.com/v0/advantages/',
+  params: {type: 'ARBITRAGE'},
+  headers: {
+    'x-rapidapi-key': 'df6985d70dmsh02dc2dacc683a0cp19beaajsn0723f8e88817',
+    'x-rapidapi-host': 'sportsbook-api2.p.rapidapi.com'
+  }
+};
+	//***************end********************/
+
 con.connect((err)=>{
 	if (err) throw err;
 	console.log("Connected to database");
@@ -58,39 +70,67 @@ app.post("/loginDetails", (req, res)=>{
 			res.render('index.ejs', {message: "Incorrect Password!Try Again"})
 		} else {
 
-			//********* All for sporting events **************/
-			const options = { //Get the latest odds for all events
-			method: 'GET',
-			url: 'https://sportsbook-api2.p.rapidapi.com/v0/competitions/',
-			params: {type: 'ARBITRAGE'},
-			headers: {
-				'x-rapidapi-key': 'df6985d70dmsh02dc2dacc683a0cp19beaajsn0723f8e88817',
-				'x-rapidapi-host': 'sportsbook-api2.p.rapidapi.com'
-			}
-			};
-
-			async function fetchData() {
-				try {
-					const response = await axios.request(options);
-					
-					console.log(response.data.competitions);
-					console.log(typeof response.data.competitions);
-
-					res.render('dashboard.ejs',{competitions: response.data.competitions} );
-				
-
-				} catch (error) {
-					console.error(error);
-				}
-			}
-
-			fetchData();
-			//***************end********************/
-			
-			
+	async function fetchData() {
+		try {
+			const response = await axios.request(options);
+			let advantages = response.data.advantages
+			console.log(advantages[0].market.event);
+			res.render("dashboard.ejs", {advantages})
+		} catch (error) {
+			console.error(error);
 		}
+	}
+
+	fetchData();
+			}
 	});
 	});
+});
+
+
+
+app.post('/events', (req, res) => {
+	
+// //*****This function fetches all competitions */
+// 	async function fetchData() {
+// 		try {
+// 			const response = await axios.request(options);
+
+// 			console.log(response.data.competitions);
+// 			console.log(typeof response.data.competitions);
+// 			console.log("payload for events");
+
+// 			// res.render('dashboard.ejs',{competitions: response.data.competitions} );
+// 			} catch (error) {
+// 					console.error(error);
+// 				}
+// 			}
+// //************End************* */
+
+// 	fetchData(); //call the funtion to fetch data from API
+
+let competitionKey = req.body["competitionKey"];
+
+const options = {
+  method: 'GET',
+  url: 'https://sportsbook-api2.p.rapidapi.com/v0/competitions/Q63E-wddv-ddp4/instances',
+  headers: {
+    'x-rapidapi-key': 'df6985d70dmsh02dc2dacc683a0cp19beaajsn0723f8e88817',
+    'x-rapidapi-host': 'sportsbook-api2.p.rapidapi.com'
+  }
+};
+
+async function fetchData() {
+	try {
+		const response = await axios.request(options);
+		console.log(response.data);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+fetchData();
+
 })
 
 app.post("/register", (req, res)=>{

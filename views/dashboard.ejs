@@ -11,24 +11,24 @@
   <thead>
     <tr>
       <th scope="col">Sport</th>
-      <th scope="col">Short Name</th>
-      <th scope="col">Name</th>
-      <th scope="col">Category</th>
+      <th scope="col">League</th>
+      <th scope="col">Event</th>
+      <th scope="col">Date & Time</th>
     </tr>
   </thead>
   <tbody>
-    <% competitions.forEach(competition => { %>
+    <% advantages.forEach(advantage => { %>
     <tr>
-      <td><form><%= competition.sport %></form></td>
-      <td><%= competition.shortName %></td>
-      <td><%= competition.name %></td>
-      <td><%= competition.category %></td>
+      <td></td>
+      <td><%= advantage.market.event.participants[0].sport %></td>
+      <td><%= advantage.market.event.competitionInstance.name %></td>
+      <td><%= advantage.market.event.name %></td>
+      <td><%= advantage.market.event.startTime %></td>
     <% }) %>
     </tr>
    
   </tbody>
 </table>
-    
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>
