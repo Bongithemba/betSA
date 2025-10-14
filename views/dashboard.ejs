@@ -12,9 +12,9 @@
     <tr>
       <th scope="col">Sport</th>
       <th scope="col">League</th>
-      <th scope="col">Home (Source)</th>
-      <th scope="col">Away (Source)</th>
+      <th scope="col">Event</th>
       <th scope="col">Date & Time</th>
+      <th scope="col">Bets</th>
     </tr>
   </thead>
   <tbody>
@@ -34,25 +34,11 @@
     <tr>
       <td><%= advantage.market.event.participants[0].sport %></td>
       <td><%= advantage.market.event.competitionInstance.name %></td>
-      <td>
-        <a href="#" onclick='openDetailsModal({
-          name: "<%= homeName %>",
-          modifier: "<%= advantage.outcomes[0].modifier %>",
-          payout: "<%= advantage.outcomes[0].payout %>",
-          source: "<%= advantage.outcomes[0].source %>"
-        })'><%= homeName %></a>
-        (<span><%= advantage.outcomes[0].source %></span>)
-      </td>
-      <td>
-        <a href="#" onclick='openDetailsModal({
-          name: "<%= awayName %>",
-          modifier: "<%= advantage.outcomes[1].modifier %>",
-          payout: "<%= advantage.outcomes[1].payout %>",
-          source: "<%= advantage.outcomes[1].source %>"
-        })'><%= awayName %></a>
-        (<span><%= advantage.outcomes[1].source %></span>)
-      </td>
+      <td><%= advantage.market.event.name %></td>
       <td><%= advantage.market.event.startTime %></td>
+      <td><button onclick='openDetailsModal({team1: "<%- JSON.stringify(advantage.outcomes[0].participant.name).slice(1, -1) %>",
+        team2: "<%- JSON.stringify(advantage.outcomes[1].participant.name).slice(1, -1) %>"
+      })'>Place Bet</button></td>
     </tr>
     <% }) %>
   </tbody>
@@ -61,16 +47,14 @@
 <!-- Modal -->
 <div id="detailsModal" class="detailsModal" style="display: none;">
 
-
   <div class="detailsModal-content">
     <div class="modal-heading">
       <h2>Participant Details</h2>
       <a href="#" onclick="closeDetailsModal(event)">Back to List</a>
     </div>
-    <p><span class="label">Name:</span> <span id="detailsName"></span></p>
-    <p><span class="label">Modifier:</span> <span id="detailsModifier"></span></p>
-    <p><span class="label">Payout:</span> <span id="detailsPayout"></span></p>
-    <p><span class="label">Source:</span> <span id="detailsSource"></span></p>
+    <button id="team1"></button>
+    <button id="team2"></button>
+
   </div>
 </div>
 
@@ -78,17 +62,14 @@
 
 
 <script>
-  // Open modal and inject data
   function openDetailsModal(data) {
-    document.getElementById('detailsName').textContent = data.name || 'N/A';
-    document.getElementById('detailsModifier').textContent = data.modifier || 'N/A';
-    document.getElementById('detailsPayout').textContent = data.payout || 'N/A';
-    document.getElementById('detailsSource').textContent = data.source || 'N/A';
+    document.getElementById('team1').textContent = data.team1 || 'N/A';
+    document.getElementById('team2').textContent = data.team2 || 'N/A';
+   
 
     document.getElementById('detailsModal').style.display = 'flex'; // or 'block' depending on your CSS
   }
 
-  // Close modal
   function closeDetailsModal(event) {
     event.preventDefault();
     document.getElementById('detailsModal').style.display = 'none';

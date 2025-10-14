@@ -76,11 +76,8 @@ app.post("/loginDetails", (req, res)=>{
 		try {
 			const response = await axios.request(options);
 			let advantages = response.data.advantages;
-			let data = JSON.stringify(advantages);
-			console.log(advantages)
-			let events = [];
-			// events.push()
-			// console.log(events);
+			console.log(advantages[0].market.event)
+
 			res.render("dashboard.ejs", {advantages})
 		} catch (error) {
 			console.error(error);
