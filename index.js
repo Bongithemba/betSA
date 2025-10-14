@@ -43,6 +43,8 @@ con.connect((err)=>{
 app.use(express.static("public")); //styles and js in this folder
 app.use(bodyParser.urlencoded({extended: true})); //middleware for handling user input.
 
+
+//******Startup*************** */
 app.get("/", (req, res)=>{
 	res.render("registration.ejs"); // landing page of the website.
 });
@@ -73,8 +75,12 @@ app.post("/loginDetails", (req, res)=>{
 	async function fetchData() {
 		try {
 			const response = await axios.request(options);
-			let advantages = response.data.advantages
-			console.log(advantages[0].market.event);
+			let advantages = response.data.advantages;
+			let data = JSON.stringify(advantages);
+			console.log(advantages)
+			let events = [];
+			// events.push()
+			// console.log(events);
 			res.render("dashboard.ejs", {advantages})
 		} catch (error) {
 			console.error(error);
@@ -90,24 +96,6 @@ app.post("/loginDetails", (req, res)=>{
 
 
 app.post('/events', (req, res) => {
-	
-// //*****This function fetches all competitions */
-// 	async function fetchData() {
-// 		try {
-// 			const response = await axios.request(options);
-
-// 			console.log(response.data.competitions);
-// 			console.log(typeof response.data.competitions);
-// 			console.log("payload for events");
-
-// 			// res.render('dashboard.ejs',{competitions: response.data.competitions} );
-// 			} catch (error) {
-// 					console.error(error);
-// 				}
-// 			}
-// //************End************* */
-
-// 	fetchData(); //call the funtion to fetch data from API
 
 let competitionKey = req.body["competitionKey"];
 
