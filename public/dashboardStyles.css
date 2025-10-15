@@ -1,4 +1,4 @@
-.detailsModal {
+.betModal {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 9999;
 }
 
-.detailsModal-content {
+.betModal-content {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
@@ -21,4 +21,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.confirmModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* Changed via JS */
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+}
+
+.confirmModal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
 }

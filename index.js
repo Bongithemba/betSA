@@ -4,10 +4,16 @@ import bodyParser from "body-parser"; //reading user input from forms
 import bcrypt from "bcrypt"; //hashing passwords from user input
 import axios from 'axios';
 import dotenv from 'dotenv'; // environment variables
+import session from "express-session"; //stores data for current session 
 
 const app = express();
 const port = 3000;
-dotenv.config({ path: '/home/student/betSA/.env'})
+dotenv.config({ path: '/home/student/betSA/.env'});
+app.use(session({
+  secret: 'Bong1Themb@', // change this to something secure
+  resave: false,
+  saveUninitialized: false
+}));
 
 
 app.listen(port, ()=>{
@@ -53,6 +59,10 @@ app.get('/login', (req, res) => {
 	res.render('login.ejs');
 })
 
+app.get('/home', (req, res) => {
+	res.render('homepage.ejs')
+})
+//***************************** */
 
 app.post("/loginDetails", (req, res)=>{
 	let email = req.body['email'];
@@ -65,6 +75,10 @@ app.post("/loginDetails", (req, res)=>{
         return res.render('login.ejs', { message: "Email not found. Please register first." });
     }
     console.log(result[0].password);
+
+	const user = result[0];
+
+
 	bcrypt.compare(password, result[0].password, function(err, result) {
 		if (err) throw err;
 		console.log(result);
@@ -72,11 +86,20 @@ app.post("/loginDetails", (req, res)=>{
 			res.render('index.ejs', {message: "Incorrect Password!Try Again"})
 		} else {
 
-	async function fetchData() {
+			//Store user ID in session
+			req.session.userID = user.userID;
+			res.render('homepage.ejs');
+			}
+	});
+	});
+});
+
+app.get('/dashboard', (req, res) =>{
+		async function fetchData() {
 		try {
 			const response = await axios.request(options);
 			let advantages = response.data.advantages;
-			console.log(advantages[0].market.event)
+			console.log(advantages[0])
 
 			res.render("dashboard.ejs", {advantages})
 		} catch (error) {
@@ -85,38 +108,8 @@ app.post("/loginDetails", (req, res)=>{
 	}
 
 	fetchData();
-			}
-	});
-	});
-});
-
-
-
-app.post('/events', (req, res) => {
-
-let competitionKey = req.body["competitionKey"];
-
-const options = {
-  method: 'GET',
-  url: 'https://sportsbook-api2.p.rapidapi.com/v0/competitions/Q63E-wddv-ddp4/instances',
-  headers: {
-    'x-rapidapi-key': 'df6985d70dmsh02dc2dacc683a0cp19beaajsn0723f8e88817',
-    'x-rapidapi-host': 'sportsbook-api2.p.rapidapi.com'
-  }
-};
-
-async function fetchData() {
-	try {
-		const response = await axios.request(options);
-		console.log(response.data);
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-fetchData();
-
 })
+
 
 app.post("/register", (req, res)=>{
 	let username = req.body["username"];
@@ -139,12 +132,32 @@ app.post("/register", (req, res)=>{
 			let sql = `INSERT INTO users (username, email, password, uuid) VALUES (?, ?, ?, FLOOR(RAND() * 90000) + 10000)`;
 			con.query(sql, [username, email, hash], function (err, result){
 			if (err) throw err;
-			console.log("1 record inserted");
+			console.log("1 record inserted into 'users'");
 			res.render('login.ejs');
 			})
 		});
 	}
 });
+
+app.post('/betSlip', (req, res) => {
+	let teamName = req.body['teamName'];
+	let eventName = req.body['eventName'];
+	let payout = req.body['payout'];
+
+	const userID = req.session.userID;
+
+	if (!userID) {
+		return res.status(401).send("Unauthorized: User not logged in");
+	}
+
+	let sql = `INSERT INTO betSlip (event, winner, payout, uuid, userID) VALUES (?, ?, ?, FLOOR(RAND() * 90000) + 10000, ?)`;
+	con.query(sql, [eventName, teamName, payout, userID], function (err, result){
+	if (err) throw err;
+	console.log("1 record inserted into 'betSlip'");
+	res.render('homepage.ejs')
+	})
+		
+})
 
 
 

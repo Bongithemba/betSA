@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title</title>
-    <link href="dashboardStyles.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Page Title</title>
+  <link href="dashboardStyles.css" rel="stylesheet">
 </head>
 <body>
+
 <table class="table">
   <thead>
     <tr>
@@ -36,46 +37,124 @@
       <td><%= advantage.market.event.competitionInstance.name %></td>
       <td><%= advantage.market.event.name %></td>
       <td><%= advantage.market.event.startTime %></td>
-      <td><button onclick='openDetailsModal({team1: "<%- JSON.stringify(advantage.outcomes[0].participant.name).slice(1, -1) %>",
-        team2: "<%- JSON.stringify(advantage.outcomes[1].participant.name).slice(1, -1) %>"
-      })'>Place Bet</button></td>
+      <td>
+        <button onclick='openbetModal(<%- JSON.stringify({
+          team1: advantage.outcomes[0].participant.name,
+          team2: advantage.outcomes[1].participant.name,
+          event: advantage.market.event.name,
+          type: advantage.market.type,
+          modifier1: advantage.outcomes[0].modifier,
+          modifier2: advantage.outcomes[1].modifier,
+          payout1: advantage.outcomes[0].payout,
+          payout2: advantage.outcomes[1].payout,
+          source1: advantage.outcomes[0].source,
+          source2: advantage.outcomes[1].source
+        }) %>)'>Place Bet</button>
+      </td>
     </tr>
     <% }) %>
   </tbody>
 </table>
 
-<!-- Modal -->
-<div id="detailsModal" class="detailsModal" style="display: none;">
+<form action="/home" method="GET"><button type="submit">Home</button></form>
 
-  <div class="detailsModal-content">
+<!-- Bet Modal -->
+<div id="betModal" class="betModal" style="display: none;">
+  <div class="betModal-content">
     <div class="modal-heading">
-      <h2>Participant Details</h2>
-      <a href="#" onclick="closeDetailsModal(event)">Back to List</a>
+      <h2>Pick Winner</h2>
+      <a href="#" onclick="closebetModal(event)">Back to List</a>
     </div>
-    <button id="team1"></button>
-    <button id="team2"></button>
-
+    <button id="team1Btn"></button>
+    <button id="team2Btn"></button>
   </div>
 </div>
 
-
-
+<!-- Confirm Modal -->
+<div id="confirmModal" class="betModal" style="display: none;">
+  <div class="confirmModal-content">
+    <div class="modal-heading">
+      <h2>Confirm Bet</h2>
+      <a href="#" onclick="closeConfirmModal(event)">Back to List</a>
+    </div>
+    <p><span class="label">Team:</span> <span id="confirmTeam"></span></p>
+    <p><span class="label">Event:</span> <span id="confirmEvent"></span></p>
+    <p><span class="label">Type:</span> <span id="confirmType"></span></p>
+    <p><span class="label">Modifier:</span> <span id="confirmModifier"></span></p>
+    <p><span class="label">Payout:</span> <span id="confirmPayout"></span></p>
+    <p><span class="label">Source:</span> <span id="confirmSource"></span></p>
+    <button onclick="closeConfirmModal(event)">Cancel</button>
+    <form action="/betSlip" method="POST"><input id="formTeamName" type="hidden" name="teamName">
+      <input id="formEventName" type="hidden" name="eventName"><input type="hidden" name="payout" id="formPayout" /><button id="confirm" type="submit">Confirm</button>
+    </form>
+  </div>
+</div>
 
 <script>
-  function openDetailsModal(data) {
-    document.getElementById('team1').textContent = data.team1 || 'N/A';
-    document.getElementById('team2').textContent = data.team2 || 'N/A';
-   
+  function openbetModal(data) {
+    // Set team names on modal buttons
+    const team1Btn = document.getElementById('team1Btn');
+    const team2Btn = document.getElementById('team2Btn');
 
-    document.getElementById('detailsModal').style.display = 'flex'; // or 'block' depending on your CSS
+    team1Btn.textContent = data.team1 || 'N/A';
+    team2Btn.textContent = data.team2 || 'N/A';
+
+    // Set onclick with data for confirmation
+    team1Btn.onclick = () => {
+      openconfirmModal({
+        team: data.team1,
+        event: data.event,
+        type: data.type,
+        modifier: data.modifier1,
+        payout: data.payout1,
+        source: data.source1
+      });
+    };
+
+    team2Btn.onclick = () => {
+      openconfirmModal({
+        team: data.team2,
+        event: data.event,
+        type: data.type,
+        modifier: data.modifier2,
+        payout: data.payout2,
+        source: data.source2
+      });
+    };
+
+    document.getElementById('betModal').style.display = 'flex';
   }
 
-  function closeDetailsModal(event) {
+  function closebetModal(event) {
     event.preventDefault();
-    document.getElementById('detailsModal').style.display = 'none';
+    document.getElementById('betModal').style.display = 'none';
+  }
+
+  function openconfirmModal(data) {
+    //**********display values*****************
+    document.getElementById('betModal').style.display = 'none';
+    document.getElementById('confirmTeam').textContent = data.team || 'N/A';
+    document.getElementById('confirmEvent').textContent = data.event || 'N/A';
+    document.getElementById('confirmType').textContent = data.type || 'N/A';
+    document.getElementById('confirmModifier').textContent = data.modifier || 'N/A';
+    document.getElementById('confirmPayout').textContent = data.payout || 'N/A';
+    document.getElementById('confirmSource').textContent = data.source || 'N/A';
+
+    document.getElementById('confirmModal').style.display = 'flex';
+    //*****************************************************
+
+    //***********Assign values*****************
+    document.getElementById('formTeamName').value = data.team || '';
+    document.getElementById('formEventName').value = data.event || '';
+    document.getElementById('formPayout').value = data.payout || '';
+    //******************************************
+  }
+
+  function closeConfirmModal(event) {
+    event.preventDefault();
+    document.getElementById('confirmModal').style.display = 'none';
   }
 </script>
-
 
 </body>
 </html>
