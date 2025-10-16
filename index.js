@@ -215,6 +215,28 @@ app.post("/remove", (req, res)=>{ // delete a student's details
   
   });
  res.redirect('/');
+});
+
+app.get('/adminLogin', (req, res) =>{
+	let email = req.body['email'];
+	let password = req.body['password'];
+
+	let adminEmail = 'thembar@thecodingground.com'
+	let adminPass = '1234Qwert'
+
+	if (email == adminEmail && password == adminPass){
+
+		con.query("SELECT * FROM users", function (err, result, fields) {
+    	if (err) throw err;
+    	console.log(result);
+    	console.log(typeof result)
+    	let data = JSON.stringify(result)
+    	res.render('adminHomepage.ejs', {users: data}) // display in table form
+  });
+	} else {
+		console.log('Admin details not correct!');
+		res.redirect('/login.ejs')
+	}
 })
 
 

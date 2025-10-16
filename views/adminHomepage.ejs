@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+</head>
+<body>
+<div id="heading">
+    <h1>user Management</h1>
+    <button id="addModal" class="addModal">Add New user</button>
+  </div>
+
+<div class="container">
+ <form id="searchField" action="/search" method="POST">
+  <input type="text" name="uid" placeholder="🔍"/>
+  <button type="submit" style="display: none;"></button>
+</form>
+
+  <table>
+  <thead>
+    <tr>
+      <th>UID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Balance</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(user => { %>
+      <tr>
+        <td><%= user.userID %></td>
+        <td><%= user.username %></td>
+        <td><%= user.email %></td>
+        <td><%= user.balance %></td>
+        <td>
+          <a href="#" onclick='openEdituserModal("<%= user.userID %>", "<%= user.username %>", "<%= user.email %>", "<%= user.balance %>")'>Edit</a>
+          <a href="#" onclick='openDeleteModal("<%= user.uid %>", "<%= user.name %>")'>Delete</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+</div>
+<br> 
+<br>
+<form action="logout" method="get">
+  <button id="logoutButton" type="submit">Logout</button>
+</form>
+
+
+
+
+
+<!-- **** Modal: Add New user **** -->
+<div id="adduserModal" class="detailsModal" style="display: none;">
+
+  <div class="modal-heading">
+    <h2>Add New user</h2>
+  </div>
+
+  <div id="adduserModalContent" class="detailsModal-content">
+
+    <form action="/add" method="POST">
+      <p>
+        <label>Full Name</label><br />
+        <input type="text" name="name" required />
+      </p>
+      <p>
+        <label>Email</label><br />
+        <input type="email" name="email" required />
+      </p>
+      <p>
+        <label>Phone</label><br />
+        <input type="text" name="phone" />
+      </p>
+      <p>
+        <label>Date of Birth</label><br />
+        <input type="text" name="dob" />
+      </p>
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="submit"><strong>Save</strong></button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+  <!-- **** Modal: Confirm Delete **** -->
+<!-- Confirm Delete Modal -->
+<div id="confirmDeleteModal" class="detailsModal" style="display: none;">
+
+  <div class="modal-heading">
+    <h2>Confirm Delete</h2>
+  </div>
+
+  <div class="detailsModal-content">
+    <p id="confirmDeleteText">Are you sure you want to delete this user?</p>
+    <form id="deleteForm" action="/remove" method="POST" style="text-align: right;">
+      <input type="hidden" name="property" value="uid" />
+      <input type="hidden" name="id-delete" id="deleteuserId" />
+      <button type="button" onclick="closeDeleteModal()">Cancel</button>
+      <button type="submit" style="margin-left: 10px;"><strong>Delete</strong></button>
+    </form>
+  </div>
+</div>
+
+<!-- **** Modal: Edit user **** -->
+<div id="edituserModal" class="detailsModal" style="display: none;">
+
+  <div class="modal-heading">
+      <h2>Edit user</h2>
+  </div>
+
+  <div id="edituserModalContent" class="detailsModal-content" >
+    <form action="/update" method="POST">
+      <input type="hidden" name="id" id="edituserId" />
+
+      <p>
+        <label>Full Name</label><br />
+        <input type="text" name="newName" id="edituserName" required />
+      </p>
+
+      <p>
+        <label>Email</label><br />
+        <input type="email" name="newEmail" id="edituserEmail" required />
+      </p>
+
+       <p>
+        <label>Phone</label><br />
+        <input type="text" name="newPhone" id="edituserPhone" required />
+      </p>
+
+      <p>
+        <label>Date of Birth</label><br />
+        <input type="text" name="newDob" id="editDob" required/>
+      </p>
+
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="submit"><strong>Save</strong></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<script>
+  //*****open and close details modal*****
+  function openDetailsModal(user) {
+  document.getElementById('detailsName').textContent = user.name;
+  document.getElementById('detailsEmail').textContent = user.email;
+  document.getElementById('detailsPhone').textContent = user.phone || 'N/A';
+  document.getElementById('detailsDOB').textContent = user.dob || 'N/A';
+
+  document.getElementById('detailsModal').style.display = 'flex';
+}
+
+function closeDetailsModal(event) {
+  event.preventDefault();
+  document.getElementById('detailsModal').style.display = 'none';
+}
+//****end*******
+
+
+// ****Open "Add user" modal******
+document.getElementById("addModal").addEventListener("click", () => {
+  document.getElementById("adduserModal").style.display = "flex";
+});
+
+
+function closeAdduserModal(event) {
+  event.preventDefault();
+  document.getElementById("adduserModal").style.display = "none";
+}
+//*****End******
+
+
+//********open and close DeleteModal*******
+ function openDeleteModal(id, name) {
+    document.getElementById('deleteuserId').value = id;
+    document.getElementById('confirmDeleteText').textContent =
+      `Are you sure you want to delete user "${name}"?`;
+    document.getElementById('confirmDeleteModal').style.display = 'flex';
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('confirmDeleteModal').style.display = 'none';
+  }
+  //*******End**************
+
+
+  //*****Open and close editModal*****
+  function openEdituserModal(id, name, email, phone, dob) {
+    document.getElementById("edituserId").value = id;
+    document.getElementById("edituserName").value = name;
+    document.getElementById("edituserEmail").value = email;
+    document.getElementById("edituserPhone").value = phone;
+    document.getElementById("editDob").value = dob;
+    document.getElementById("edituserModal").style.display = "flex";
+  }
+
+  function closeEdituserModal(event) {
+    event.preventDefault();
+    document.getElementById("edituserModal").style.display = "none";
+  }
+  //*****end********
+ 
+  
+
+  const modal = document.querySelector('.detailsModal');
+
+  // Add a click listener to close any modal when clicking outside of its content
+  window.addEventListener("click", function (event) {
+    // Select all modals
+    const modals = document.querySelectorAll(".detailsModal");
+
+    modals.forEach((modal) => {
+      // If the click target *is* the modal background (not the content inside)
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  });
+</script>
+    
+</body>
+</html>
