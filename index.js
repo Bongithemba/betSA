@@ -60,7 +60,20 @@ app.get('/login', (req, res) => {
 })
 
 app.get('/home', (req, res) => {
-	res.render('homepage.ejs')
+	const email = req.session.email;
+
+	if (!email) {
+    // User not logged in
+    return res.redirect('/login');
+  }
+
+	con.query(`SELECT * FROM users WHERE email = '${email}'`, function (err, result) {
+    if (err) throw err;
+    console.log(result[0]);
+	let data = result[0]
+    res.render('homepage.ejs', {content: data}); 
+  	});
+
 })
 //***************************** */
 
@@ -85,14 +98,24 @@ app.post("/loginDetails", (req, res)=>{
 		if (result == false){
 			res.render('index.ejs', {message: "Incorrect Password!Try Again"})
 		} else {
-
 			//Store user ID in session
 			req.session.userID = user.userID;
-			res.render('homepage.ejs');
-			}
+			req.session.email = user.email;
+
+			console.log("Session saved:", req.session);
+
+			con.query(`SELECT * FROM users WHERE email = '${email}'`, function (err, result) {
+   				if (err) throw err;
+				let data = result[0]
+    			res.render('homepage.ejs', {content: data}); 
+  			});
+
+
+		}
 	});
 	});
 });
+
 
 app.get('/dashboard', (req, res) =>{
 		async function fetchData() {
@@ -154,9 +177,44 @@ app.post('/betSlip', (req, res) => {
 	con.query(sql, [eventName, teamName, payout, userID], function (err, result){
 	if (err) throw err;
 	console.log("1 record inserted into 'betSlip'");
-	res.render('homepage.ejs')
+
+	con.query(`SELECT * FROM users WHERE userID = '${userID}'`, function (err, result) {
+   		if (err) throw err;
+		let data = result[0];
+    	res.render('homepage.ejs', {content: data}); 
+  		});
+
+	
 	})
 		
+});
+
+app.get('/viewSlip', (req, res) => {
+
+	const userID = req.session.userID;
+
+	con.query(`SELECT * FROM betSlip WHERE userID = '${userID}'`, function (err, result) {
+   		if (err) throw err;
+		console.log(result);
+    	console.log(typeof result)
+	
+    	res.render('betSlip.ejs', {bets: result}); 
+  	})
+	
+
+
+});
+
+app.post("/remove", (req, res)=>{ // delete a student's details
+  let property = req.body["property"];
+  let value = req.body["id-delete"];
+  let sql = `DELETE FROM betSlip WHERE ${property} = ${con.escape(value)}`;
+  con.query(sql, function (err, result) {
+  if (err) throw err;
+  console.log("Number of records deleted: " + result.affectedRows);
+  
+  });
+ res.redirect('/');
 })
 
 
