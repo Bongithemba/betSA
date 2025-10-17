@@ -1,76 +1,113 @@
-* {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
+    body {
+      background: linear-gradient(to right, #002b5b, #0466c8);
+      color: white;
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #f5f5f5;
-}
+    .navbar {
+      background-color: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
 
-.container {
-  margin-top: 50px;
-  border: 1px solid #ccc;
-  padding: 20px;
-  background-color: white;
-  width: 300px;
-}
+    .auth-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
 
-.registration-form h2 {
-  margin-bottom: 20px;
-}
+    .card {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      max-width: 900px;
+      width: 100%;
+      overflow: hidden;
+    }
 
-.registration-form label {
-  display: block;
-  margin: 10px 0 5px;
-}
+    .card-body {
+      padding: 3rem;
+    }
 
-.registration-form input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-}
+    .register-header {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-.registration-form button {
-  padding: 8px 16px;
-  background-color: white;
-  border: 1px solid #000;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-left: 175px;
-}
+    label {
+      color: #ddd;
+      font-weight: 500;
+    }
 
-.signin-box {
-  font-size: 14px;
-  border: 1px solid #ccc;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: white;
-  width: 300px;
-  height: 100px;
-}
+    input {
+      border-radius: 10px !important;
+      padding: 0.75rem !important;
+    }
 
-.signin-button {
-  display: inline-block;
-  padding: 5px 10px;
-  margin-left: 150px;
-  margin-bottom: 100px;
-  border: 1px solid #000;
-  text-decoration: none;
-  color: black;
-  border-radius: 4px;
-}
+    .btn-custom {
+      background-color: #ffc107;
+      color: #000;
+      font-weight: 600;
+      border: none;
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 10px;
+      transition: 0.3s ease;
+    }
 
-#loginform {
-  height: 50px;
-  margin-top: -41px;
-  padding-left: 40px;
-}
+    .btn-custom:hover {
+      background-color: #e0a800;
+      color: #fff;
+    }
 
+    .signin-section {
+      background-color: rgba(0, 0, 0, 0.2);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
+    .signin-section h3 {
+      font-weight: 600;
+    }
+
+    .signin-section button {
+      margin-top: 1rem;
+      background: transparent;
+      border: 2px solid #ffc107;
+      color: #ffc107;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.5rem 1.5rem;
+      transition: 0.3s ease;
+    }
+
+    .signin-section button:hover {
+      background-color: #ffc107;
+      color: #000;
+    }
+
+    .error-message {
+      color: #ffc107;
+      text-align: center;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      color: #ccc;
+      margin-top: auto;
+    }
