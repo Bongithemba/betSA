@@ -74,6 +74,10 @@ app.get('/home', (req, res) => {
     res.render('homepage.ejs', {content: data}); 
   	});
 
+});
+
+app.get('/logout', (req, res) =>{
+	res.render('registration.ejs')
 })
 //***************************** */
 
@@ -218,26 +222,42 @@ app.post("/remove", (req, res)=>{ // delete a student's details
 });
 
 app.get('/adminLogin', (req, res) =>{
+	res.render('adminLogin.ejs')
+});
+
+app.post("/search", (req, res) => {
+  const userID = req.body.userID;
+
+  // Search for a user by UID
+  const sql = `SELECT * FROM users WHERE userID = ?`;
+  con.query(sql, [userID], function (err, result) {
+    if (err) throw err;
+
+    res.render("adminHomepage.ejs", { users: result }); // Return filtered data
+  });
+});
+
+
+app.post('/adminLoginDetails', (req, res) => {
 	let email = req.body['email'];
 	let password = req.body['password'];
 
-	let adminEmail = 'thembar@thecodingground.com'
-	let adminPass = '1234Qwert'
+	let adminEmail = 'thembar@thecodingground.com';
+	let adminPassword = '1234Qwert';
 
-	if (email == adminEmail && password == adminPass){
-
+	if (email == adminEmail && password == adminPassword){
 		con.query("SELECT * FROM users", function (err, result, fields) {
     	if (err) throw err;
-    	console.log(result);
-    	console.log(typeof result)
-    	let data = JSON.stringify(result)
+    	let data = result;
     	res.render('adminHomepage.ejs', {users: data}) // display in table form
-  });
+  	})
+
 	} else {
-		console.log('Admin details not correct!');
-		res.redirect('/login.ejs')
+		res.render('adminLogin.ejs', {message: 'Incorrect Admin Credentials'})
 	}
-})
+});
+
+
 
 
 
