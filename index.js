@@ -2,7 +2,7 @@ import express from "express"; //express for creatin server
 import mysql from "mysql"; //connecting to local database
 import bodyParser from "body-parser"; //reading user input from forms 
 import bcrypt from "bcrypt"; //hashing passwords from user input
-import axios from 'axios';
+import axios from 'axios'; // for API calls
 import dotenv from 'dotenv'; // environment variables
 import session from "express-session"; //stores data for current session 
 
@@ -29,6 +29,7 @@ let con = mysql.createConnection(
 	}
 ); //configure connection to database
 
+
 //********* All for sporting events **************/
 const options = {
   method: 'GET',
@@ -40,6 +41,8 @@ const options = {
   }
 };
 	//***************end********************/
+
+
 
 con.connect((err)=>{
 	if (err) throw err;
@@ -105,6 +108,7 @@ app.post("/loginDetails", (req, res)=>{
 			//Store user ID in session
 			req.session.userID = user.userID;
 			req.session.email = user.email;
+			req.session.balance = user.balance;
 
 			console.log("Session saved:", req.session);
 
@@ -126,8 +130,6 @@ app.get('/dashboard', (req, res) =>{
 		try {
 			const response = await axios.request(options);
 			let advantages = response.data.advantages;
-			console.log(advantages[0])
-
 			res.render("dashboard.ejs", {advantages})
 		} catch (error) {
 			console.error(error);
@@ -166,35 +168,49 @@ app.post("/register", (req, res)=>{
 	}
 });
 
+
 app.post('/betSlip', (req, res) => {
-	let teamName = req.body['teamName'];
-	let eventName = req.body['eventName'];
-	let payout = req.body['payout'];
+	const teamName = req.body['teamName'];
+	const eventName = req.body['eventName'];
+	const payout = req.body['payout'];
 
 	const userID = req.session.userID;
 
 	if (!userID) {
-		return res.status(401).send("Unauthorized: User not logged in");
-	}
+    	return res.status(401).send("Unauthorized: User not logged in");
+  	}
 
-	let sql = `INSERT INTO betSlip (event, winner, payout, uuid, userID) VALUES (?, ?, ?, FLOOR(RAND() * 90000) + 10000, ?)`;
-	con.query(sql, [eventName, teamName, payout, userID], function (err, result){
-	if (err) throw err;
-	console.log("1 record inserted into 'betSlip'");
+	// Insert the bet first
+	const insertBet = `INSERT INTO betSlip (event, winner, payout, uuid, userID) 
+                    	VALUES (?, ?, ?, FLOOR(RAND() * 90000) + 10000, ?)`;
 
-	con.query(`SELECT * FROM users WHERE userID = '${userID}'`, function (err, result) {
-   		if (err) throw err;
-		let data = result[0];
-    	res.render('homepage.ejs', {content: data}); 
-  		});
+	con.query(insertBet, [eventName, teamName, payout, userID], function (err) {
+    	if (err) throw err;
+    	console.log("✅ 1 record inserted into 'betSlip'");
 
-	
-	})
-		
+    	// Subtract R2 from balance
+    	const updateBalance = `UPDATE users SET balance = balance - 2 WHERE userID = ?`;
+
+    	con.query(updateBalance, [userID], function (err) {
+    		if (err) throw err;
+    		console.log("💰 User balance reduced by R2");
+
+    		// Fetch updated balance to show on homepage
+    		con.query(`SELECT * FROM users WHERE userID = ?`, [userID], function (err, result) {
+        		if (err) throw err;
+        		let data = result[0];
+
+        		// Update session balance too
+        		req.session.balance = data.balance;
+
+        		res.render('homepage.ejs', { content: data });
+      		});
+    	});
+ 	});
 });
 
-app.get('/viewSlip', (req, res) => {
 
+app.get('/viewSlip', (req, res) => {
 	const userID = req.session.userID;
 
 	con.query(`SELECT * FROM betSlip WHERE userID = '${userID}'`, function (err, result) {
@@ -203,11 +219,9 @@ app.get('/viewSlip', (req, res) => {
     	console.log(typeof result)
 	
     	res.render('betSlip.ejs', {bets: result}); 
-  	})
-	
-
-
+  	});
 });
+
 
 app.post("/remove", (req, res)=>{ // delete a student's details
   let property = req.body["property"];

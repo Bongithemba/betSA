@@ -26,9 +26,8 @@
       </tr>
     </thead>
     <tbody>
-      <% 
-        const seenTeams = new Set(); 
-        advantages.forEach(advantage => {
+      <% const seenTeams = new Set(); 
+          advantages.forEach(advantage => {
           const homeName = advantage.outcomes[0].participant.name;
           const awayName = advantage.outcomes[1].participant.name;
 
@@ -45,18 +44,18 @@
         <td><%= advantage.market.event.name %></td>
         <td><%= advantage.market.event.startTime %></td>
         <td>
-          <button class="btn btn-green btn-sa" onclick='openbetModal(<%- JSON.stringify({
-            team1: advantage.outcomes[0].participant.name,
-            team2: advantage.outcomes[1].participant.name,
-            event: advantage.market.event.name,
-            type: advantage.market.type,
-            modifier1: advantage.outcomes[0].modifier,
-            modifier2: advantage.outcomes[1].modifier,
-            payout1: advantage.outcomes[0].payout,
-            payout2: advantage.outcomes[1].payout,
-            source1: advantage.outcomes[0].source,
-            source2: advantage.outcomes[1].source
-          }) %>)'>Place Bet</button>
+          <button class="btn btn-green btn-sa" onclick='openbetModal({
+            team1: "<%= homeName %>",
+            team2: "<%= awayName %>",
+            event: "<%= advantage.market.event.name %>",
+            type: "<%= advantage.market.type %>",
+            modifier1: "<%= advantage.outcomes[0].modifier %>" ,
+            modifier2: "<%= advantage.outcomes[1].modifier %>",
+            payout1: "<%= advantage.outcomes[0].payout %>",
+            payout2: "<%= advantage.outcomes[1].payout %>",
+            source1: "<%= advantage.outcomes[0].source %>",
+            source2: "<%= advantage.outcomes[1].source %>"
+          }) '>Place Bet</button>
         </td>
       </tr>
       <% }) %>
