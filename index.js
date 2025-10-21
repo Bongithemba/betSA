@@ -10,7 +10,7 @@ const app = express();
 const port = 3000;
 dotenv.config({ path: '/home/student/betSA/.env'});
 app.use(session({
-  secret: 'Bong1Themb@', // change this to something secure
+  secret: process.env.secret, // change this to something secure
   resave: false,
   saveUninitialized: false
 }));
@@ -28,6 +28,7 @@ let con = mysql.createConnection(
         database: process.env.database
 	}
 ); //configure connection to database
+
 
 
 //********* All for sporting events **************/
@@ -83,6 +84,7 @@ app.get('/logout', (req, res) =>{
 	res.render('registration.ejs')
 })
 //***************************** */
+
 
 app.post("/loginDetails", (req, res)=>{
 	let email = req.body['email'];
@@ -180,6 +182,10 @@ app.post('/betSlip', (req, res) => {
     	return res.status(401).send("Unauthorized: User not logged in");
   	}
 
+	if (req.session.balance < 2) {
+  		return res.send("Insufficient balance to place bet.");
+	} else {
+
 	// Insert the bet first
 	const insertBet = `INSERT INTO betSlip (event, winner, payout, uuid, userID) 
                     	VALUES (?, ?, ?, FLOOR(RAND() * 90000) + 10000, ?)`;
@@ -207,6 +213,7 @@ app.post('/betSlip', (req, res) => {
       		});
     	});
  	});
+	}
 });
 
 
@@ -263,6 +270,7 @@ app.post('/adminLoginDetails', (req, res) => {
 		con.query("SELECT * FROM users", function (err, result, fields) {
     	if (err) throw err;
     	let data = result;
+		res.send(200);
     	res.render('adminHomepage.ejs', {users: data}) // display in table form
   	})
 
