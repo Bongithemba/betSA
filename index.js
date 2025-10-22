@@ -10,7 +10,7 @@ const app = express();
 const port = 3000;
 dotenv.config({ path: '/home/student/betSA/.env'});
 app.use(session({
-  secret: process.env.secret, // change this to something secure
+  secret: process.env.secret,
   resave: false,
   saveUninitialized: false
 }));
@@ -49,6 +49,7 @@ con.connect((err)=>{
 	if (err) throw err;
 	console.log("Connected to database");
 }) //connect to database
+
 
 app.use(express.static("public")); //styles and js in this folder
 app.use(bodyParser.urlencoded({extended: true})); //middleware for handling user input.
@@ -270,7 +271,6 @@ app.post('/adminLoginDetails', (req, res) => {
 		con.query("SELECT * FROM users", function (err, result, fields) {
     	if (err) throw err;
     	let data = result;
-		res.send(200);
     	res.render('adminHomepage.ejs', {users: data}) // display in table form
   	})
 
