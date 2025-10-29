@@ -10,7 +10,7 @@ const app = express();
 const port = 3000;
 dotenv.config({ path: '/home/student/betSA/.env'});
 app.use(session({
-  secret: process.env.secret,
+  secret: process.env.secret || 'Bong1Themb@',
   resave: false,
   saveUninitialized: false
 }));
@@ -22,7 +22,7 @@ app.listen(port, ()=>{
 
 let con = mysql.createConnection(
 	{
-		host: process.env.host,
+		host: process.env.host || 'host.docker.internal',
         user: process.env.user,
         password: process.env.password,
         database: process.env.database
